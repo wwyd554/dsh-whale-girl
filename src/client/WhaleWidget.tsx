@@ -7,8 +7,10 @@ import { EasterEgg } from './EasterEgg'
 import { pickRandomIdleLine } from './quotes'
 import { SoundEngine } from './SoundEngine'
 import { FlingTracker, startFling } from './PhysicsFling'
-import { WHALE_GIRL_DATA_URL } from './whaleDataUrl'
-import { RUA_GIF_URL } from './ruaDataUrl'
+import {
+  WHALE_GIRL_CLOSED_DATA_URL,
+  WHALE_GIRL_DATA_URL
+} from './stateImageData'
 import { WidgetMenu, MenuConfig, DEFAULT_MENU_CONFIG, ProviderRow } from './WidgetMenu'
 
 const EMPTY_STATE: WhaleState = {
@@ -135,10 +137,8 @@ export function WhaleWidget() {
   const [bounce, setBounce] = useState(false)
   const [bounceAxis, setBounceAxis] = useState<'x' | 'y' | null>(null)
   const [petted, setPetted] = useState(false)
-  const [petKey, setPetKey] = useState(0)
   const [state, setState] = useState<WhaleState>(EMPTY_STATE)
   const [bubble, setBubble] = useState<string | null>(null)
-  const [imgSrc] = useState<string>(WHALE_GIRL_DATA_URL)
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
   const [providers, setProviders] = useState<ProviderRow[] | null>(null)
   const [switching, setSwitching] = useState<string | null>(null)
@@ -184,6 +184,8 @@ export function WhaleWidget() {
   // Agent 工作状态（thinking/done/idle）：由桥接的 workstate 广播驱动
   const [workState, setWorkState] = useState<'idle' | 'thinking' | 'done'>('idle')
   const prevWorkRef = useRef<'idle' | 'thinking' | 'done'>('idle')
+  // 角色始终保持同一个待机形象；点击时只短暂切换为同构图的闭眼帧。
+  const imgSrc = petted ? WHALE_GIRL_CLOSED_DATA_URL : WHALE_GIRL_DATA_URL
 
   // 省电模式：挂件交互刷新空闲计时，60 秒无交互 → 暂停漂浮动画/停用毛玻璃（.wg-eco）
   const markActive = useCallback(() => {
@@ -699,10 +701,6 @@ export function WhaleWidget() {
     }
     if (workState === 'done' && config.showWorkState) {
       if (config.showBubble) setBubble('任务搞定啦！🎉')
-      setPetted(true)
-      setPetKey((k) => k + 1)
-      window.clearTimeout(petTimerRef.current)
-      petTimerRef.current = window.setTimeout(() => setPetted(false), 260)
       soundRef.current?.bounce()
       reportEvent('workstate', { state: 'done' })
     }
@@ -879,9 +877,8 @@ export function WhaleWidget() {
       if (!moved) {
         reportEvent('click')
         setPetted(true)
-        setPetKey((k) => k + 1)
         window.clearTimeout(petTimerRef.current)
-        petTimerRef.current = window.setTimeout(() => setPetted(false), 260)
+        petTimerRef.current = window.setTimeout(() => setPetted(false), 410)
         if (config.showBubble) {
           const r = eggRef.current.onPress()
           setBubble(r.kind === 'quote' ? r.text : pickRandomIdleLine())
@@ -995,6 +992,8 @@ export function WhaleWidget() {
     return () => window.removeEventListener('resize', onResize)
   }, [reportEvent, shake, snap])
 
+  if (state.desktopActive) return null
+
   return (
     <>
       <style>{WIDGET_CSS}</style>
@@ -1024,12 +1023,12 @@ export function WhaleWidget() {
         {config.showWorkState && state.subagentRunning > 0 && (
           <div className="wg-subagent">分身×{state.subagentRunning}</div>
         )}
-        <img className="wg-img" src={imgSrc || '/dsh-whale-girl/whale-girl.png'} alt="鲸鱼娘" draggable={false} />
-        {petted && (
-          <div className="wg-rua" key={petKey}>
-            <img src={RUA_GIF_URL} alt="" draggable={false} />
-          </div>
-        )}
+        <img
+          className="wg-img"
+          src={imgSrc || '/dsh-whale-girl/whale-girl.png'}
+          alt="大肥鱼桌宠"
+          draggable={false}
+        />
         {config.showProgress && (
           <ContextBar
             pct={state.contextPct}

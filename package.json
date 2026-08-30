@@ -1,6 +1,6 @@
 {
   "name": "dsh-whale-girl",
-  "version": "0.3.6",
+  "version": "0.7.11",
   "description": "鲸鱼娘·灵动挂件：余额/用量/上下文进度/彩蛋",
   "license": "MIT",
   "type": "module",
@@ -41,7 +41,6 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@esbuild/win32-x64": "0.28.2",
     "@tsdown/css": "^0.22.14",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.0.0",
@@ -56,7 +55,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "node scripts/generate-state-images.mjs && tsc --noEmit"
   },
   "dependencies": {
     "js-yaml": "^5.4.1"

@@ -15,9 +15,6 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
     devDependencies:
-      '@esbuild/win32-x64':
-        specifier: 0.28.2
-        version: 0.28.2
       '@tsdown/css':
         specifier: ^0.22.14
         version: 0.22.14(postcss@8.5.26)(tsdown@0.22.14)
@@ -1225,7 +1222,8 @@ snapshots:
   '@esbuild/win32-ia32@0.28.2':
     optional: true
 
-  '@esbuild/win32-x64@0.28.2': {}
+  '@esbuild/win32-x64@0.28.2':
+    optional: true
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
 

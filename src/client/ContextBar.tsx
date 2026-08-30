@@ -13,6 +13,10 @@ export interface WhaleState {
   subagentRunning: number
   /** 系统资源（内存/CPU），来自 host 信息面板 */
   sysInfo: { memPct: number; memUsed: number; memTotal: number; cpu: number }
+  desktopActive?: boolean
+  workState?: 'idle' | 'thinking' | 'done'
+  model?: string
+  updatedAt?: string
 }
 
 interface Props {

@@ -2,6 +2,7 @@ import { fetchBalance, Ledger, fetchProviderBalance } from './services/balance'
 import { listProviders, currentModel, selectModel } from './services/providers'
 import { computeContextPct, DEFAULT_CONTEXT_LIMIT } from './services/context'
 import { estimateCost } from './services/turnCost'
+import { isDeepSeekPeak } from './services/pricing'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -14,6 +15,8 @@ const DSH_HOME = process.env.DSH_HOME || path.join(os.homedir(), '.dsh')
 const USAGE_FILE = path.join(DSH_HOME, '.whale-girl-usage.json')
 const CONFIG_FILE = path.join(DSH_HOME, '.whale-girl-config.json')
 const DIAG_FILE = path.join(DSH_HOME, '.whale-girl-diag.log')
+const STATE_FILE = path.join(DSH_HOME, '.whale-girl-state.json')
+const DESKTOP_MARKER = path.join(DSH_HOME, '.whale-girl-desktop-active')
 /** CPU 采样缓存（用 os.cpus() 时间差计算占用，Windows 无 loadavg）。 */
 let lastCpuTimes: { total: number; busy: number } | null = null
 const ASSET_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../assets')
@@ -109,7 +112,12 @@ function normalizeConfig(raw: unknown): WidgetConfig {
 function registerAssetRoutes(ctx: any): void {
   const webServer = ctx.get('webServer')
   if (!webServer) return
-  for (const f of ['whale-girl.png', 'Ya1.mp3', 'Ya2.mp3']) {
+  for (const f of [
+    'whale-girl.png',
+    'whale-girl-closed.png',
+    'Ya1.mp3',
+    'Ya2.mp3'
+  ]) {
     webServer.register({
       kind: 'exact',
       path: `/dsh-whale-girl/${f}`,
@@ -161,15 +169,11 @@ export function apply(ctx: any) {
   // 缓存最近一次成功获取的会话，避免 buildState 轮询时会话引用短暂丢失导致上下文闪 0
   let lastKnownSession: any = null
 
-  // DeepSeek 官方峰谷时段（北京时间）：工作日 9-12 点与 14-18 点为高峰，其余为低谷；周末全天低谷。
-  // 依据系统时间判断（与 dsh-whale-widget 的 isPeakTime 一致）。
+  // DeepSeek V4 官方峰谷时段：北京时间周一至周五 09:00-12:00、14:00-18:00 为高峰。
+  // 周六、周日全天以及工作日其余时间均为低谷。
   function isPeakTime(timeSec: number): boolean {
     if (!isFinite(timeSec)) return false
-    const bj = new Date(timeSec * 1000 + 8 * 3600 * 1000)
-    const dow = bj.getUTCDay() // 0=周日 6=周六（按北京时间读 UTC 即北京日历日）
-    if (dow === 0 || dow === 6) return false
-    const hour = bj.getUTCHours()
-    return (hour >= 9 && hour < 12) || (hour >= 14 && hour < 18)
+    return isDeepSeekPeak(new Date(timeSec * 1000))
   }
 
   /** 当前时段峰谷：官方时段总是高峰或低谷。 */
@@ -306,6 +310,13 @@ export function apply(ctx: any) {
     }
   })
 
+  function visibleWorkState(): 'idle' | 'thinking' | 'done' {
+    const age = Date.now() - workStateSince
+    if (workState === 'done' && age > 30000) return 'idle'
+    if (workState === 'thinking' && age > 600000) return 'idle'
+    return workState
+  }
+
   // 数据接口：webServer JSON 路由（npm 编译插件用 webServer，不用 Builtin harness）
   function buildState(): object {
     let contextTokens = 0
@@ -350,7 +361,8 @@ export function apply(ctx: any) {
     diag(
       `state: ctxTokens=${contextTokens} balance=${cachedBalance} currency=${cachedCurrency} todayUsage=${ledger.state.todayUsage} lastTurnCost=${lastTurnCost}`
     )
-    return {
+    const model = currentModel().model || 'deepseek-v4-flash'
+    const snapshot = {
       balance: cachedBalance,
       currency: cachedCurrency,
       todayUsage: ledger.state.todayUsage,
@@ -361,9 +373,33 @@ export function apply(ctx: any) {
       peakLow: peak,
       refreshMs: widgetConfig.realtimeBalance ? 10000 : 60000,
       subagentRunning,
-      sysInfo: readSys()
+      sysInfo: readSys(),
+      workState: visibleWorkState(),
+      model,
+      desktopActive: fs.existsSync(DESKTOP_MARKER),
+      updatedAt: new Date().toISOString()
     }
+    try {
+      const temp = `${STATE_FILE}.tmp`
+      fs.writeFileSync(temp, JSON.stringify(snapshot), 'utf8')
+      fs.renameSync(temp, STATE_FILE)
+    } catch {
+      // keep serving the in-memory snapshot when the local bridge file is unavailable
+    }
+    return snapshot
   }
+
+  // 独立桌宠通过本地 JSON 读取真实会话数据；低频刷新避免给 DSH 主线程增加压力。
+  const scheduleDesktopSnapshot = () => {
+    setTimeout(() => {
+      buildState()
+      scheduleDesktopSnapshot()
+    }, widgetConfig.realtimeBalance ? 10000 : 60000)
+  }
+  setTimeout(() => {
+    buildState()
+    scheduleDesktopSnapshot()
+  }, 2500)
 
   /** 系统资源：内存（os 准确）+ CPU（loadavg 近似，避免引入笨重 sysinfo 依赖）。 */
   function readSys(): { memPct: number; memUsed: number; memTotal: number; cpu: number } {
@@ -418,10 +454,7 @@ export function apply(ctx: any) {
       kind: 'exact',
       path: '/dsh-whale-girl/api/workstate',
       handler: (req: unknown, res: any) => {
-        let s = workState
-        const age = Date.now() - workStateSince
-        if (s === 'done' && age > 30000) s = 'idle'
-        if (s === 'thinking' && age > 600000) s = 'idle'
+        const s = visibleWorkState()
         res.writeHead(200, {
           'Content-Type': 'application/json; charset=utf-8',
           'Cache-Control': 'no-store'

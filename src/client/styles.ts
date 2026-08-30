@@ -80,6 +80,7 @@ export const WIDGET_CSS = `
   pointer-events: none;
   animation: wg-float 3.4s ease-in-out infinite;
   filter: drop-shadow(0 4px 10px rgba(30, 50, 120, 0.18));
+  transition: filter 180ms ease;
 }
 /* 角色吸附窗口左部时镜像翻转（面向右，贴合成窗沿），带平滑的 3D 翻转动画 */
 .wg-flip {
@@ -246,13 +247,16 @@ export const WIDGET_CSS = `
   object-fit: contain;
   display: block;
 }
-/* 抚摸时角色明显上下压缩一次（立即，无漂浮抖动） */
+/* 点击整只角色：像果冻一样压扁、回弹并逐级收敛。 */
 .wg-pet .wg-img {
-  animation: wg-pet-stretch 0.1s ease-in-out 1;
+  animation: wg-pet-stretch 0.38s ease-in-out 1;
 }
 @keyframes wg-pet-stretch {
-  0%, 100% { transform: scaleX(var(--wg-flip, 1)) scaleY(1); }
-  50% { transform: scaleX(var(--wg-flip, 1)) scaleY(0.85); }
+  0%, 100% { transform: translateY(0) scaleX(var(--wg-flip, 1)) scaleY(1); }
+  18% { transform: translateY(4px) scaleX(calc(1.10 * var(--wg-flip, 1))) scaleY(0.88); }
+  38% { transform: translateY(-4px) scaleX(calc(0.95 * var(--wg-flip, 1))) scaleY(1.07); }
+  58% { transform: translateY(2px) scaleX(calc(1.04 * var(--wg-flip, 1))) scaleY(0.97); }
+  78% { transform: translateY(-1px) scaleX(calc(0.99 * var(--wg-flip, 1))) scaleY(1.02); }
 }
 @keyframes wg-rua-pat {
   0% { transform: translateX(-50%) translateY(0); }

@@ -1,4 +1,10 @@
 ﻿node_modules/
 lib/
 *.tgz
-
+src/client/stateImageData.ts
+macos/WhaleGirlDesktop/build/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.xcuserstate
