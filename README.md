@@ -1,171 +1,114 @@
-# dsh-whale-girl
+# DeepSeek 大肥鱼
 
-**鲸鱼娘·灵动桌宠** —— 一个会卖萌、会记账、会弹跳的 DSH 桌面伴侣。
+一个常驻 macOS 桌面的 DeepSeek 大肥鱼桌宠，也可作为 DSH 页面挂件使用。
 
-支持 DSH 页面内挂件与 macOS 透明置顶独立桌宠。独立桌宠可跨应用显示，单击会在头顶按顺序切换峰谷价格、DeepSeek 余额和当前会话 Token 信息。
+<p align="center">
+  <img src="assets/whale-girl.png" width="260" alt="DeepSeek 大肥鱼桌宠">
+</p>
 
-## 功能
+## 主要功能
 
-- 🖼️ **完整大肥鱼立绘** —— 补全右下缺失区域，图片内嵌进脚本，无网络依赖
-- 🫨 **果冻点击反馈** —— 单击整只角色会闭眼并像果冻一样压扁、回弹，角色始终保持同一套形象
-- 💰 **余额 / 用量** —— 实时显示 DeepSeek 余额、今日用量、上轮对话消耗，余额跌破预警线自动气泡提醒
-- 📊 **上下文占用** —— 进度条显示当前会话上下文占用（对齐 DSH 显示），≥90% 主动提醒开新会话
-- ⏱ **峰谷提醒** —— 判断当前时段为用量高峰还是低谷
-- 💬 **彩蛋气泡** —— 点击触发随机台词/彩蛋；空闲 2~5 分钟还会自己开口说一句（说话即唤醒动画，说完继续省电）
-- 🖱 **右键菜单** —— 切换音效、开关显示模块、切换 API 提供方、调节弹弓力度与毛玻璃强度、省电模式开关、恢复默认位置
-- 🎵 **音效** —— 可爱合成音 / 鸭叫 可切换（mp3 内嵌，无网络依赖）
-- 🤸 **甩抛弹跳** —— 快速甩出后在窗口内弹跳，撞边抖动画 + 音效
-- 🎯 **中键弹弓抛掷** —— 按住中键拖动，挂件跟随并绘制蓝色水滴连接线，松手沿原位置方向弹射（力度与拉开距离成正比，可在菜单调节）
-- 🍃 **省电模式** —— 空闲 60 秒自动暂停漂浮动画并停用毛玻璃（交互立即恢复），降低常驻 GPU/CPU 占用
-- 🧊 **毛玻璃强度** —— 进度条底板模糊度 0~16 可调，0 为关闭（更省资源）
-- 🫧 **底板透明度** —— 进度条底板与右键菜单透明度 0~80% 可调（默认 18%），拉得越高越透，透出页面背景
-- 🖼 **信息面板** —— 浮窗显示时间/日期/CPU/内存，默认跟随角色；角色快速移动或直接拖动时脱钩独立（撞边界/角色反弹、几秒后回归角色下方），跟随距离阈值右键菜单可调
+- **macOS 独立桌宠**：透明、无边框、始终置顶，可跨应用显示并拖动位置。
+- **点击互动**：单击整只大肥鱼会闭眼，并播放轻微的果冻回弹动画。
+- **顺序信息卡**：每次点击依次显示“峰谷时期 → DeepSeek 余额 → 随机吐槽”。
+- **自动收起**：信息卡显示 4 秒后自动消失；连续点击会切换内容并重新计时。
+- **峰谷颜色**：“低谷时期”为绿色，“高峰时期”为红色。
+- **随机吐槽**：内置多条桌宠台词，每轮随机选择并避免连续重复。
+- **DeepSeek 连接**：通过官方 API Key 验证账号并读取余额。
+- **钥匙串保护**：API Key 只保存在 macOS 钥匙串，不写入项目文件、状态 JSON 或日志。
+- **DSH 页面挂件**：保留原项目的页面内挂件、余额、上下文提醒和交互功能。
 
-## 安装
+## 下载与启动
 
-```bash
-# 从 GitHub Release 安装（含 tgz 安装包，推荐）
-dsh plugin add nickkkkkk123123/dsh-whale-girl
+前往 [Releases](https://github.com/wwyd554/dsh-whale-girl/releases/latest) 下载最新版：
 
-# 或本地源码目录 link 依赖后加入 profile bundles
-```
-
-### macOS 本地安装
-
-本项目是 DSH Web UI 插件，桌宠直接渲染在 DSH Desktop 窗口中，不依赖 Windows 原生桌面 Helper。
-
-```bash
-corepack enable
-pnpm install
-pnpm build
-pnpm pack
-dsh plugin --profile web add ./dsh-whale-girl-0.7.11.tgz
-```
-
-完全退出并重新打开 DSH Desktop 后生效。如果已经安装过同名插件，请先在 DSH 中移除旧版本再安装本地包。
+- `DSH-Whale-Girl-macOS-*.zip`：macOS 独立桌宠。
+- `dsh-whale-girl-*.tgz`：DSH 插件包。
 
 ### macOS 独立桌宠
 
+1. 解压下载的 ZIP。
+2. 将“DSH 大肥鱼.app”拖入“应用程序”或桌面。
+3. 双击启动。
+
+首次打开若被 macOS 拦截，请右键应用，选择“打开”，再确认一次。项目目前使用本地临时签名，系统也可能询问是否允许访问钥匙串；确认应用来源后选择“允许”。
+
+终端启动方式：
+
 ```bash
-./macos/WhaleGirlDesktop/build.sh
-open "./macos/WhaleGirlDesktop/build/DSH 大肥鱼.app"
+open "/Applications/DSH 大肥鱼.app"
 ```
 
-独立桌宠是透明无边框、始终置顶的 macOS 应用；可直接拖动。单击整只大肥鱼会闭眼并播放果冻式 `duang`，头顶的白底粗蓝边信息框按以下顺序循环，每次只显示一类信息：
+需要开机自动运行时，可在“系统设置 → 通用 → 登录项”中添加该应用。
 
-1. 当前高峰/低谷。
-2. DeepSeek 当前余额与今日已用。
-3. 随机吐槽，每轮换一句有趣的桌宠台词。
+## 连接 DeepSeek
 
-右键大肥鱼选择“连接 DeepSeek…”可输入官方 API Key。桌宠会先调用官方余额接口验证 Key，成功后仅保存到 macOS 钥匙串，并每 60 秒刷新余额；可随时在同一窗口更换 Key 或断开连接。
+首次启动且尚未保存 Key 时，会自动打开连接窗口。也可以右键桌宠，选择“连接 DeepSeek…”或“DeepSeek 账号设置…”。
 
-数据由 DSH 插件以原子写入方式保存到 `~/.dsh/.whale-girl-state.json`；桌宠只读取这个本地文件，不读屏、不监听键盘、不上传桌面信息。启动独立桌宠时，DSH 页面内的同款挂件会自动隐藏，避免重复。
+1. 在 [DeepSeek 开放平台](https://platform.deepseek.com/api_keys) 创建 API Key。
+2. 在桌宠窗口中输入或粘贴 Key。
+3. 点击“验证并保存”。
+4. 验证成功后窗口会自动关闭，余额会定时刷新。
 
-### DeepSeek V4 峰谷价格（USD / 百万 Token）
+再次进入账号设置时只显示连接状态、“替换 Key”和“断开连接”。只有点击“替换 Key”后才会重新显示输入框；新 Key 验证成功前，原 Key 不会被覆盖。
 
-官方 2026-08-17 起生效的规则：高峰时段仅为北京时间周一至周五 09:00–12:00、14:00–18:00；工作日其余时间以及周六、周日全天均为低谷。
+桌宠调用的官方接口：
 
-| 模型 | 时段 | 输入命中缓存 | 输入未命中 | 输出 |
-| --- | --- | ---: | ---: | ---: |
-| V4 Flash | 低谷 | $0.007 | $0.22 | $0.66 |
-| V4 Flash | 高峰 | $0.014 | $0.44 | $1.32 |
-| V4 Pro | 低谷 | $0.022 | $0.66 | $1.98 |
-| V4 Pro | 高峰 | $0.044 | $1.32 | $3.96 |
+- 认证方式：`Authorization: Bearer <API_KEY>`
+- 余额接口：`GET https://api.deepseek.com/user/balance`
 
-## 配置
+## DeepSeek 峰谷规则
 
-挂件配置保存在 `~/.dsh/.whale-girl-config.json`（可用右键菜单可视化修改，也可直接编辑文件）：
+按照 [DeepSeek 官方定价说明](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)：
 
-```json
-{
-  "soundMode": "cute",
-  "showProgress": true,
-  "showBubble": true,
-  "showBalance": true,
-  "showPeak": true,
-  "slingPower": 20,
-  "ecoMode": true,
-  "frost": 4,
-  "panelOpacity": 0.82,
-  "lowBalance": 10
-}
+- 北京时间周一至周五 `09:00–12:00`、`14:00–18:00` 为高峰时段。
+- 工作日其他时间为低谷时段。
+- 周六、周日全天为低谷时段。
+- 低谷价格为高峰价格的一半。
+
+桌宠会按北京时间自动判断，无需手动切换。
+
+## DSH 插件安装
+
+下载 Release 中的 `.tgz` 后执行：
+
+```bash
+dsh plugin --profile web add ./dsh-whale-girl-0.7.11.tgz
 ```
 
-| 字段 | 说明 |
-| --- | --- |
-| `soundMode` | `cute` 可爱合成音 / `duck` 鸭叫 |
-| `showProgress` | 是否显示上下文进度条 |
-| `showBubble` | 是否显示彩蛋/随机台词气泡 |
-| `showBalance` | 是否在详情里显示余额 |
-| `showPeak` | 是否显示峰谷提醒 |
-| `slingPower` | 中键弹弓发射力度系数（5~60，松手速度 = 拉开距离 × 系数） |
-| `ecoMode` | 省电模式：空闲 60 秒暂停漂浮动画并停用毛玻璃 |
-| `frost` | 毛玻璃强度 0~16（进度条底板 blur 像素，0=关闭） |
-| `panelOpacity` | 底板不透明度 0.2~1（内部存储；菜单滑块按「透明度 = 1 − 该值」显示，默认 0.82 即透明度 18%；作用于进度条底板与右键菜单） |
-| `lowBalance` | 余额预警线（元），余额低于该值时气泡提醒充值，0=关闭预警 |
+完全退出并重新打开 DSH Desktop 后生效。独立桌宠运行时，页面内的同款挂件会自动隐藏，避免同时出现两只。
 
-## API 提供方切换
+## 本地开发
 
-右键鲸鱼娘 → **API 提供方** 菜单区会列出所有已配置的提供方（内置 DeepSeek 官方 + `settings.yaml` 中声明的 `llm-pi-ai.providers` / `llm-openai-compatible.providers`），并显示各自的余额（平台无公开余额 API 时显示"余额未知"）。点击某项即切换默认模型路由（写入 `agent-default-model`，新会话生效）。
-
-- **余额查询**：已知平台专用 API（DeepSeek / 硅基流动）优先，否则按 baseURL 自动探测常见余额端点，都没有则显示"余额未知"。
-- **切换模型**：优先用该 provider 在配置里声明的第一个模型，未声明时回退到内置映射。
-
-## 中键弹弓与省电
-
-- **中键弹弓**：按住鼠标中键拖动挂件（自动屏蔽浏览器中键滚轮），原位置与挂件间绘制蓝色水滴连接线；松手时挂件沿「原位置 → 当前」的反方向弹回（橡皮筋手感），速度 = 拉开距离 × `slingPower`，撞边弹跳 + 音效复用甩抛物理。
-- **省电模式**：挂件交互（按下/划过/菜单）会刷新空闲计时，60 秒无交互后自动暂停漂浮动画、停用毛玻璃底板（`:hover` 立即恢复）；菜单可关闭该模式。毛玻璃强度 `frost` 调到 0 或开启省电都能显著降低常驻渲染开销。
-
-## 占用实测（回应"桌宠一定吃资源"的刻板印象）
-
-所有数字均为这台机器上的实测值，不是估算：
-
-| 项目 | 数据 | 说明 |
-| --- | --- | --- |
-| 安装包 | **346KB** | 立绘经 palette 量化压缩（1081KB → 46KB）后整体 -90% |
-| 额外进程 | **0 个** | 挂件是 DSH Web UI 内的一个 DOM 节点，不开新进程、不装 Helper |
-| 空闲 CPU 影响 | **约 0.6%** | 同口径 A/B：65 秒空闲窗口内，漂浮动画开/关的整机 CPU 增量差仅 0.15 秒 |
-| 空闲 GPU | 省电模式自动归零 | 空闲 60 秒停止逐帧合成调度，交互瞬间恢复 |
-
-测量方法：重启 DSH 后等待 80 秒（越过省电阈值），对全部 DSH 进程取 `TotalProcessorTime`，测 65 秒窗口增量，省电开/关各测一轮取差值。动画的渲染成本主要在 GPU 合成器的逐帧调度（省电模式已消除），CPU 侧几乎免费——"桌宠 = Electron 大户"的印象对本插件不成立。
-
-> **说明（v0.3.x）**：上表为**信息面板关闭（默认）**时的空闲实测。**信息面板开启**（时间/系统资源 + 毛玻璃 `infoFrost` + 物理跟随/碰撞循环）会**额外占用** CPU/GPU，强度取决于 `infoFrost`（模糊半径，0=关闭，见菜单"面板模糊"）与是否开启 **`pauseOnThinking`**（DSH 输出/思考时暂停信息面板物理，默认开）。建议：面板模糊调低（或 0）+ 开 `pauseOnThinking` 可明显降低该额外占用。上表 0.6% 等为信息面板关闭时的值；信息面板开启时的具体数值**可实测**（本页不虚标）。
->
-> **实测（2026-08-30，v0.3.6，DSH 2.0.3 + 多插件环境）**：信息面板**关**≈70.2% 单核 / **开**≈70.9% 单核，**差值 ≈0.7% 单核**——信息面板开启本身**增量极小**（说明 transform 定位 / 物理减负 / `pauseOnThinking` 已生效）。注意：该环境 DSH 2.0.3 + 多后台插件（dsh-dafeiyu-helper 等）的**整体空闲基线约 70% 单核**，与上表 0.6%（0.2 系精简、无这些后台插件）相差大——**0.6% 仅适用于当时精简场景**；实际占用取决于 DSH 版本 / 后台插件数量。
-
-## 已知问题：DSH 流式输出时挂件卡顿
-
-**现象**：agent 输出长文字（流式）时，挂件（及同页 UI）在相邻 token 之间会卡顿，输出完毕立即恢复流畅。
-
-**问题真正所在**：**不在本插件**。DSH 前端（官方 `deepseek-ai/deepseek-harness`，DSH Desktop 通过 submodule 引入）在流式输出时**每收到一个 token 就整体重建当前 assistant 消息**（`assistant.ts` 的 `updateChunk` 每 chunk 复制 blocks + 重新渲染整条消息），占用主线程；本挂件与它同页面/同主线程，被连带卡住。虚拟列表已解决长会话整体渲染，但**"流式每 token 全量重建当前消息"是剩余瓶颈**。
-
-**本插件已做的缓解**：`thinking`（DSH 输出/思考）时暂停信息面板物理循环（省主线程，可通过菜单开关）；transform 定位（不触发 layout reflow）；信息面板物理循环减负。**根治在 DSH 的流式渲染层**（该问题已反馈给 DSH Desktop 作者，见其 issue）；挂件自身不产生该卡顿。
-
-## 数据链路（为什么不用 fetch）
-
-DSH Desktop 的 webserver 会对不带 renderer 认证头的子资源请求返回 **403**（包括 `fetch`、`<img>`、`<audio>`、`<script>`）。因此：
-
-- **图片 / 音效**：内嵌为 data URL，完全不走网络请求
-- **数据**：宿主通过 `webserver/index-inject` 向主页面顶层注入桥接脚本，脚本用**带认证的 fetch** 拉取 `/dsh-whale-girl/api/state`，再通过 `postMessage` 广播给挂件（slots 组件运行在 iframe/隔离上下文，其自身 fetch 不带认证会被拦）
-
-> 这也是 `dsh-whale-widget` 数据同样获取不到（只显示余额，不显示上下文）的原因——普通 fetch 在 DSH Desktop 拿不到 host 数据。
-
-## 余额 key
-
-余额通过 `credentials.resolve('DEEPSEEK_API_KEY')` 读取，需在 DSH 中配置 `DEEPSEEK_API_KEY`（与 `dsh-whale-widget` 一致）。
-
-## 开发
+环境要求：Node.js、pnpm、Swift 编译工具链，以及 macOS 13 或更高版本。
 
 ```bash
 pnpm install
-pnpm build     # 打包 host (lib/index.js) + client (lib/client.js)
-pnpm test      # 运行测试
+pnpm typecheck
+pnpm test
+pnpm build
+./macos/WhaleGirlDesktop/build.sh
 ```
+
+构建结果：
+
+- DSH 插件代码：`lib/`
+- macOS 应用：`macos/WhaleGirlDesktop/build/DSH 大肥鱼.app`
+
+## 隐私与安全
+
+- API Key 存储在 macOS 钥匙串服务 `local.dsh.whalegirl.desktop` 中。
+- 源码、安装包和 Git 历史不包含用户 API Key。
+- 项目已忽略 `.env`、本地构建产物、插件安装包和运行状态文件。
+- 桌宠不会读屏、监听键盘或上传桌面内容。
+- 余额请求仅发送至 DeepSeek 官方 API。
+
+## 项目来源
+
+本项目基于 [nickkkkkk123123/dsh-whale-girl](https://github.com/nickkkkkk123123/dsh-whale-girl) 的 DSH 页面挂件继续开发。当前版本新增并重做了 macOS 独立桌宠、角色素材、点击动画、顺序气泡、随机吐槽、钥匙串连接以及新版峰谷规则等功能。
+
+感谢原项目贡献者。本仓库依照原项目的 MIT License 发布。
 
 ## License
 
 [MIT](./LICENSE)
-
-## 来源与致谢
-
-本项目基于 [nickkkkkk123123/dsh-whale-girl](https://github.com/nickkkkkk123123/dsh-whale-girl) 的 DSH 页面挂件继续开发，并保留原项目的 MIT 许可证。当前版本新增了 macOS 独立桌宠、补全角色素材、点击闭眼果冻动画、顺序信息气泡、随机吐槽、DeepSeek API Key 钥匙串登录及新版峰谷计价规则等功能。
