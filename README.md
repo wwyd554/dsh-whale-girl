@@ -73,7 +73,7 @@ open "/Applications/DSH 大肥鱼.app"
 下载 Release 中的 `.tgz` 后执行：
 
 ```bash
-dsh plugin --profile web add ./dsh-whale-girl-0.7.11.tgz
+dsh plugin --profile web add ./dsh-whale-girl-0.7.12.tgz
 ```
 
 完全退出并重新打开 DSH Desktop 后生效。独立桌宠运行时，页面内的同款挂件会自动隐藏，避免同时出现两只。

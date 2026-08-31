@@ -309,11 +309,17 @@ private final class PetView: NSView {
         if hypot(dx, dy) > 4 { didDrag = true }
         let targetScreen = NSScreen.screens.first(where: { NSMouseInRect(now, $0.frame, false) }) ?? window.screen ?? NSScreen.main
         let visible = targetScreen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
-        let maxX = max(visible.minX, visible.maxX - window.frame.width)
-        let maxY = max(visible.minY, visible.maxY - window.frame.height)
+        // The panel is deliberately larger than the fish so the speech bubble has
+        // somewhere to draw. Clamp the visible fish, not that transparent canvas,
+        // otherwise the unused margins feel like an invisible wall at the screen edge.
+        let petFrame = imageView.frame
+        let minX = visible.minX - petFrame.minX
+        let minY = visible.minY - petFrame.minY
+        let maxX = visible.maxX - petFrame.maxX
+        let maxY = visible.maxY - petFrame.maxY
         let origin = NSPoint(
-            x: min(max(windowStart.x + dx, visible.minX), maxX),
-            y: min(max(windowStart.y + dy, visible.minY), maxY)
+            x: min(max(windowStart.x + dx, minX), maxX),
+            y: min(max(windowStart.y + dy, minY), maxY)
         )
         window.setFrameOrigin(origin)
     }
