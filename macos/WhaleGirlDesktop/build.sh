@@ -16,6 +16,7 @@ swiftc "$script_dir"/Sources/*.swift \
   -O
 
 cp "$script_dir/Info.plist" "$app_dir/Contents/Info.plist"
+cp "$script_dir/AppIcon.icns" "$app_dir/Contents/Resources/AppIcon.icns"
 for asset in whale-girl whale-girl-closed; do
   cp "$project_dir/assets/$asset.png" "$app_dir/Contents/Resources/$asset.png"
 done
