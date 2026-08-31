@@ -103,9 +103,7 @@ pnpm build
 - 桌宠不会读屏、监听键盘或上传桌面内容。
 - 余额请求仅发送至 DeepSeek 官方 API。
 
-## 项目来源
 
-本项目基于 [nickkkkkk123123/dsh-whale-girl](https://github.com/nickkkkkk123123/dsh-whale-girl) 的 DSH 页面挂件继续开发。当前版本新增并重做了 macOS 独立桌宠、角色素材、点击动画、顺序气泡、随机吐槽、钥匙串连接以及新版峰谷规则等功能。
 
 感谢原项目贡献者。本仓库依照原项目的 MIT License 发布。
 
